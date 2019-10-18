@@ -8,14 +8,15 @@ class App extends Component {
     super(props);
     this.state = {
       colsNum: 10,
-      rowsNum: 12,
+      rowsNum: 14,
     };
 
     this.gridRef = React.createRef();
   }
 
   componentDidMount() {
-    this.gridRef.current.style.setProperty("--colsNum", this.state.colsNum);
+    this.gridRef.current.style.setProperty("--largerDimension", this.state.rowsNum);
+    this.gridRef.current.style.setProperty("--smallerDimension", this.state.colsNum);
   }
 
   renderGrid() {

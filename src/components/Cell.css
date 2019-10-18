@@ -1,8 +1,9 @@
 .cell {
-    padding-top: 100%;
-    background-color: #23ce6b;
-  }
+  width: var(--cell-dimension);
+  height: var(--cell-dimension);
+  background-color: #23ce6b;
+}
   
-    .cell:hover {
-      background-color: #264027;
-    }
+  .cell:hover {
+    background-color: #264027;
+  }
