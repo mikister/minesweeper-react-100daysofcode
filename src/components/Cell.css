@@ -1,9 +1,35 @@
 .cell {
   width: var(--cell-dimension);
   height: var(--cell-dimension);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #fff8f0;
   background-color: #23ce6b;
+
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
   
-  .cell:hover {
-    background-color: #264027;
-  }
+.cell:hover {
+  background-color: #264027;
+}
+
+.cell--revealed, .cell--revealed:hover {
+  background-color: hsl(141, 60%, 80%) !important;
+}
+
+.cell--revealed > svg {
+  opacity: 1 !important;
+}
+
+
+.cell > svg {
+  opacity: 0;
+  color: #0c1b33;
+  font-size: calc(var(--cell-dimension) * 0.6);
+}
