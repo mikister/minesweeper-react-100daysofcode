@@ -45,12 +45,3 @@ body {
   place-items: stretch;
   gap: 0.2em;
 }
-
-.cell {
-  padding-top: 100%;
-  background-color: #23ce6b;
-}
-
-  .cell:hover {
-    background-color: #264027;
-  }
