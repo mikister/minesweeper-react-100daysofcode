@@ -22,7 +22,7 @@ class App extends Component {
   renderGrid() {
     var cells = [];
 
-    for(var ii = 1; ii < (this.state.colsNum * this.state.rowsNum); ii++) {
+    for(var ii = 0; ii < (this.state.colsNum * this.state.rowsNum); ii++) {
       cells.push(<Cell />);
     }
 
@@ -41,7 +41,6 @@ class App extends Component {
         <div className="grid-wrapper">
           <main className="grid" ref={this.gridRef}>
             { this.renderGrid.bind(this)() }
-            <div className="cell"></div>
           </main>
         </div>
       </div>

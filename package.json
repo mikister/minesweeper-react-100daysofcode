@@ -1,5 +1,6 @@
 {
   "name": "minesweeper-react-100daysofcode",
+  "homepage": "https://mikister.github.io/minesweeper-react-100daysofcode/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
