@@ -8,15 +8,15 @@ class App extends Component {
     super(props);
     this.state = {
       colsNum: 10,
-      rowsNum: 14,
+      rowsNum: 18,
     };
 
     this.gridRef = React.createRef();
   }
 
   componentDidMount() {
-    this.gridRef.current.style.setProperty("--largerDimension", this.state.rowsNum);
-    this.gridRef.current.style.setProperty("--smallerDimension", this.state.colsNum);
+    this.gridRef.current.style.setProperty("--larger-dimension", this.state.rowsNum);
+    this.gridRef.current.style.setProperty("--smaller-dimension", this.state.colsNum);
   }
 
   renderGrid() {
@@ -38,10 +38,12 @@ class App extends Component {
           {/* menu button here */}
           <h1>Minesweeper</h1>
         </header>
-        <main className="grid" ref={this.gridRef}>
-          { this.renderGrid.bind(this)() }
-          <div className="cell"></div>
-        </main>
+        <div className="grid-wrapper">
+          <main className="grid" ref={this.gridRef}>
+            { this.renderGrid.bind(this)() }
+            <div className="cell"></div>
+          </main>
+        </div>
       </div>
     );
   }
