@@ -7,17 +7,10 @@ import { faBomb } from '@fortawesome/free-solid-svg-icons'
 class Cell extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      revealed: false,
-    };
   }
 
   onCellClick() {
-    this.setState({
-      revealed: true
-    });
-
-    // Emit event that cell is clicked wiht cell ID
+    this.props.cellClicked(this.props.cellIndex);
   }
 
   renderContent() {
@@ -34,7 +27,7 @@ class Cell extends Component {
 
   render() {
     return(
-      <div className={"cell " + (this.state.revealed ? "cell--revealed " : "") } onClick={this.onCellClick.bind(this)}>
+      <div className={"cell " + (this.props.revealed ? "cell--revealed " : "") } onClick={this.onCellClick.bind(this)}>
         { this.renderContent() }
       </div>
     );

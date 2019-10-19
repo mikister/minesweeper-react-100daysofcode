@@ -8,13 +8,19 @@ class App extends Component {
     super(props);
     this.state = {
       cellContents: [],
-      bombCount: 10,
+      cellsRevealed: [],
+      cellsChecked: [],
+      bombCount: 40,
       contentGenerated: false,
       colsNum: 10,
       rowsNum: 18,
     };
 
     this.gridRef = React.createRef();
+  }
+
+  setAsyncState = (newState) => {
+    return new Promise((resolve) => this.setState(newState, () => resolve()));
   }
 
   componentDidMount() {
@@ -25,6 +31,7 @@ class App extends Component {
 
     this.setState({
       cellContents: Array(cellCount).fill(""),
+      cellsRevealed: Array(cellCount).fill(false),
     });
   }
 
@@ -32,7 +39,7 @@ class App extends Component {
     var cells = [];
 
     for(var ii = 0; ii < (this.state.colsNum * this.state.rowsNum); ii++) {
-      cells.push(<Cell content={this.state.cellContents[ii]} key={ii} />);
+      cells.push(<Cell cellClicked={this.cellClicked.bind(this)} content={this.state.cellContents[ii]} revealed={this.state.cellsRevealed[ii]} cellIndex={ii} key={ii} />);
     }
 
     return cells;
@@ -41,8 +48,7 @@ class App extends Component {
   generateCellContents(protectedCellIndex=null) {
     let cellCount = this.state.rowsNum * this.state.colsNum;
     var bombsPlaced = 0;
-    var newCellContents = [];
-    console.log(protectedCellIndex);
+    var newCellContents = Array(cellCount).fill("");
 
     while(bombsPlaced < this.state.bombCount) {
       let bombCell = Math.floor(Math.random() * cellCount);
@@ -136,8 +142,106 @@ class App extends Component {
       }
     }
 
-    this.setState({
+    return this.setAsyncState({
       cellContents: newCellContents,
+    });
+  }
+
+  cellClicked = async (cellIndex) => {
+    // console.log(this.state.cellContents[cellIndex]);
+
+    if (!this.state.generateCellContents) {
+      await this.generateCellContents(cellIndex);
+
+      this.setState({
+        generateCellContents: true,  
+      });
+    }
+
+    if (this.state.cellsRevealed[cellIndex] === false) {
+      var newCellsRevealed = this.state.cellsRevealed;
+      newCellsRevealed[cellIndex] = true;
+      await this.setAsyncState({
+        cellsRevealed: newCellsRevealed,
+      });
+
+      this.checkCell(cellIndex);
+    }
+  }
+
+  checkCell = async (cellIndex) => {
+    if (this.state.cellsChecked.includes(cellIndex))
+      return null;
+
+    if (this.state.cellContents[cellIndex] === "b") {
+      this.gameOver();
+    }
+    else if (this.state.cellContents[cellIndex] === "") {
+      let cellCount = this.state.rowsNum * this.state.colsNum;
+      var aa = cellIndex - this.state.colsNum;
+      var bb = cellIndex + this.state.colsNum;
+
+      var newCellsChecked = this.state.cellsChecked;
+      newCellsChecked.push(cellIndex);
+  
+      await this.setAsyncState({
+        cellsChecked: newCellsChecked,
+      });
+
+      if (aa > 0) {
+        if ((cellIndex + 1) % this.state.colsNum !== 1) {
+          if (this.state.cellContents[aa - 1] !== "b") {
+            this.cellClicked(aa - 1);
+          }
+        }
+
+        if (this.state.cellContents[aa] !== "b") {
+          this.cellClicked(aa);
+        }
+
+        if ((cellIndex + 1) % this.state.colsNum !== 0) {
+          if (this.state.cellContents[aa + 1] !== "b") {
+            this.cellClicked(aa + 1);
+          }
+        }
+      }
+
+      if ((cellIndex + 1) % this.state.colsNum !== 1) {
+        if (this.state.cellContents[cellIndex - 1] !== "b") {
+          this.cellClicked(cellIndex - 1);
+        }
+      }
+      if ((cellIndex + 1) % this.state.colsNum !== 0) {
+        if (this.state.cellContents[cellIndex + 1] !== "b") {
+          this.cellClicked(cellIndex + 1);
+        }
+      }
+
+      if (bb < cellCount) {
+        if ((cellIndex + 1) % this.state.colsNum !== 1) {
+          if (this.state.cellContents[bb - 1] !== "b") {
+            this.cellClicked(bb - 1);
+          }
+        }
+
+        if (this.state.cellContents[bb] !== "b") {
+          this.cellClicked(bb);
+        }
+        
+        if ((cellIndex + 1) % this.state.colsNum !== 0) {
+          if (this.state.cellContents[bb + 1] !== "b") {
+            this.cellClicked(bb + 1);
+          }
+        }
+      }
+    }
+  }
+
+  gameOver() {
+    let cellCount = this.state.rowsNum * this.state.colsNum;
+
+    this.setState({
+      cellsRevealed: Array(cellCount).fill(true),
     });
   }
   
