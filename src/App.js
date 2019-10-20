@@ -9,7 +9,6 @@ class App extends Component {
     this.state = {
       cellContents: [],
       cellsRevealed: [],
-      cellsChecked: [],
       bombCount: 40,
       contentGenerated: false,
       colsNum: 10,
@@ -35,11 +34,46 @@ class App extends Component {
     });
   }
 
+  getNeighboringCells(cellIndex) {
+    var neighbors = [];
+    
+    let cellCount = this.state.rowsNum * this.state.colsNum;
+    let rowAboveCell = cellIndex - this.state.colsNum;
+    let rowBellowCell = cellIndex + this.state.colsNum;
+
+    if (rowAboveCell > 0) {
+      neighbors.push(rowAboveCell);
+
+      if ((cellIndex + 1) % this.state.colsNum !== 1)
+        neighbors.push(rowAboveCell - 1)
+
+      if ((cellIndex + 1) % this.state.colsNum !== 0)
+        neighbors.push(rowAboveCell);
+    }
+
+    if ((cellIndex + 1) % this.state.colsNum !== 1)
+      neighbors.push(cellIndex - 1);
+    if ((cellIndex + 1) % this.state.colsNum !== 0)
+      neighbors.push(cellIndex + 1);
+
+    if (rowBellowCell < cellCount) {
+      if (rowBellowCell);
+
+      if ((cellIndex + 1) % this.state.colsNum !== 1)
+        neighbors.push(rowBellowCell - 1);
+      
+      if ((cellIndex + 1) % this.state.colsNum !== 0)
+        neighbors.push(rowBellowCell + 1);
+    }
+
+    return neighbors;
+  }
+
   renderGrid() {
     var cells = [];
 
-    for(var ii = 0; ii < (this.state.colsNum * this.state.rowsNum); ii++) {
-      cells.push(<Cell cellClicked={this.cellClicked.bind(this)} content={this.state.cellContents[ii]} revealed={this.state.cellsRevealed[ii]} cellIndex={ii} key={ii} />);
+    for(var cellIndex = 0; cellIndex < (this.state.colsNum * this.state.rowsNum); cellIndex++) {
+      cells.push(<Cell cellClicked={this.cellClicked.bind(this)} content={this.state.cellContents[cellIndex]} revealed={this.state.cellsRevealed[cellIndex]} cellIndex={cellIndex} key={cellIndex} />);
     }
 
     return cells;
@@ -49,96 +83,54 @@ class App extends Component {
     let cellCount = this.state.rowsNum * this.state.colsNum;
     var bombsPlaced = 0;
     var newCellContents = Array(cellCount).fill("");
+    var neighboringCells = [];
 
     while(bombsPlaced < this.state.bombCount) {
-      let bombCell = Math.floor(Math.random() * cellCount);
+      let bombCellIndex = Math.floor(Math.random() * cellCount);
 
-      if (newCellContents[bombCell] !== "b") {
+      if (newCellContents[bombCellIndex] !== "b") {
         if (protectedCellIndex === null) {
-          newCellContents[bombCell] = "b";
+          newCellContents[bombCellIndex] = "b";
           bombsPlaced++;
         }
         else {
-          var aa = protectedCellIndex - this.state.colsNum;
-          var bb = protectedCellIndex + this.state.colsNum;
+          if (bombCellIndex === protectedCellIndex)
+            continue;
 
-          if (bombCell == protectedCellIndex)
+          neighboringCells = this.getNeighboringCells(protectedCellIndex);
+          var bombInProtectedArea = false;
+
+          neighboringCells.forEach((neighborIndex) => {
+            if (neighborIndex === bombCellIndex) {
+              bombInProtectedArea = true;
+            }
+          });
+
+          if (bombInProtectedArea) {
             continue;
-  
-          if (aa > 0) {
-            if ((protectedCellIndex + 1) % this.state.colsNum !== 1)
-              if (aa - 1 === bombCell)
-                continue;
-    
-            if (aa === bombCell)
-            continue;
-    
-            if ((protectedCellIndex + 1) % this.state.colsNum !== 0)
-              if (aa + 1 === bombCell)
-                continue;
-          }
-    
-          if ((protectedCellIndex + 1) % this.state.colsNum !== 1)
-            if (protectedCellIndex - 1 === bombCell)
-              continue;
-          if ((protectedCellIndex + 1) % this.state.colsNum !== 0)
-            if (protectedCellIndex + 1 === bombCell)
-              continue;
-    
-          if (bb < cellCount) {
-            if ((protectedCellIndex + 1) % this.state.colsNum !== 1)
-              if (bb - 1 === bombCell)
-                continue;
-    
-            if (bb === bombCell)
-              continue;
-            
-            if ((protectedCellIndex + 1) % this.state.colsNum !== 0)
-              if (bb + 1 === bombCell)
-                continue;
           }
 
-          newCellContents[bombCell] = "b";
+          newCellContents[bombCellIndex] = "b";
           bombsPlaced++;
         }
       }
     }
 
-    for(var ii = 0; ii < cellCount; ii++) {
-      var bombsAroundCell = 0;
-      var aa = ii - this.state.colsNum;
-      var bb = ii + this.state.colsNum;
-
-      if (newCellContents[ii] === "b")
+    for(var cellIndex = 0; cellIndex < cellCount; cellIndex++) {
+      if (newCellContents[cellIndex] === "b")
         continue;
 
-      if (aa > 0) {
-        if ((ii + 1) % this.state.colsNum !== 1)
-          bombsAroundCell += newCellContents[aa - 1] === "b" ? 1 : 0;
+      var bombsAroundCell = 0;
+      neighboringCells = this.getNeighboringCells(cellIndex);
 
-        bombsAroundCell += newCellContents[aa] === "b" ? 1 : 0;
-
-        if ((ii + 1) % this.state.colsNum !== 0)
-          bombsAroundCell += newCellContents[aa + 1] === "b" ? 1 : 0;
-      }
-
-      if ((ii + 1) % this.state.colsNum !== 1)
-        bombsAroundCell += newCellContents[ii - 1] === "b" ? 1 : 0;
-      if ((ii + 1) % this.state.colsNum !== 0)
-        bombsAroundCell += newCellContents[ii + 1] === "b" ? 1 : 0;
-
-      if (bb < cellCount) {
-        if ((ii + 1) % this.state.colsNum !== 1)
-          bombsAroundCell += newCellContents[bb - 1] === "b" ? 1 : 0;
-
-        bombsAroundCell += newCellContents[bb] === "b" ? 1 : 0;
-        
-        if ((ii + 1) % this.state.colsNum !== 0)
-          bombsAroundCell += newCellContents[bb + 1] === "b" ? 1 : 0;
-      }
+      neighboringCells.forEach((neighborIndex) => {
+        if (newCellContents[neighborIndex] === "b") {
+          bombsAroundCell++;
+        }
+      });
 
       if (bombsAroundCell > 0) {
-        newCellContents[ii] = bombsAroundCell.toString();
+        newCellContents[cellIndex] = bombsAroundCell.toString();
       }
     }
 
@@ -148,13 +140,11 @@ class App extends Component {
   }
 
   cellClicked = async (cellIndex) => {
-    // console.log(this.state.cellContents[cellIndex]);
-
-    if (!this.state.generateCellContents) {
+    if (!this.state.contentGenerated) {
       await this.generateCellContents(cellIndex);
 
       this.setState({
-        generateCellContents: true,  
+        contentGenerated: true,  
       });
     }
 
@@ -170,70 +160,17 @@ class App extends Component {
   }
 
   checkCell = async (cellIndex) => {
-    if (this.state.cellsChecked.includes(cellIndex))
-      return null;
-
     if (this.state.cellContents[cellIndex] === "b") {
       this.gameOver();
     }
     else if (this.state.cellContents[cellIndex] === "") {
-      let cellCount = this.state.rowsNum * this.state.colsNum;
-      var aa = cellIndex - this.state.colsNum;
-      var bb = cellIndex + this.state.colsNum;
+      var neighboringCells = this.getNeighboringCells(cellIndex)
 
-      var newCellsChecked = this.state.cellsChecked;
-      newCellsChecked.push(cellIndex);
-  
-      await this.setAsyncState({
-        cellsChecked: newCellsChecked,
+      neighboringCells.forEach((neighborIndex) => {
+        if (this.state.cellContents[neighborIndex] !== "b") {
+          this.cellClicked(neighborIndex);
+        }
       });
-
-      if (aa > 0) {
-        if ((cellIndex + 1) % this.state.colsNum !== 1) {
-          if (this.state.cellContents[aa - 1] !== "b") {
-            this.cellClicked(aa - 1);
-          }
-        }
-
-        if (this.state.cellContents[aa] !== "b") {
-          this.cellClicked(aa);
-        }
-
-        if ((cellIndex + 1) % this.state.colsNum !== 0) {
-          if (this.state.cellContents[aa + 1] !== "b") {
-            this.cellClicked(aa + 1);
-          }
-        }
-      }
-
-      if ((cellIndex + 1) % this.state.colsNum !== 1) {
-        if (this.state.cellContents[cellIndex - 1] !== "b") {
-          this.cellClicked(cellIndex - 1);
-        }
-      }
-      if ((cellIndex + 1) % this.state.colsNum !== 0) {
-        if (this.state.cellContents[cellIndex + 1] !== "b") {
-          this.cellClicked(cellIndex + 1);
-        }
-      }
-
-      if (bb < cellCount) {
-        if ((cellIndex + 1) % this.state.colsNum !== 1) {
-          if (this.state.cellContents[bb - 1] !== "b") {
-            this.cellClicked(bb - 1);
-          }
-        }
-
-        if (this.state.cellContents[bb] !== "b") {
-          this.cellClicked(bb);
-        }
-        
-        if ((cellIndex + 1) % this.state.colsNum !== 0) {
-          if (this.state.cellContents[bb + 1] !== "b") {
-            this.cellClicked(bb + 1);
-          }
-        }
-      }
     }
   }
 
