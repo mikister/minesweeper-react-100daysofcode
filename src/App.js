@@ -24,6 +24,7 @@ class App extends Component {
   }
 
   componentDidMount() {
+    console.dir(this);
     let cellCount = this.state.rowsNum * this.state.colsNum;
 
     this.gridRef.current.style.setProperty("--larger-dimension", this.state.rowsNum);
@@ -50,7 +51,7 @@ class App extends Component {
         neighbors.push(rowAboveCell - 1)
 
       if ((cellIndex + 1) % this.state.colsNum !== 0)
-        neighbors.push(rowAboveCell);
+        neighbors.push(rowAboveCell + 1);
     }
 
     if ((cellIndex + 1) % this.state.colsNum !== 1)
@@ -59,7 +60,7 @@ class App extends Component {
       neighbors.push(cellIndex + 1);
 
     if (rowBellowCell < cellCount) {
-      if (rowBellowCell);
+      neighbors.push(rowBellowCell);
 
       if ((cellIndex + 1) % this.state.colsNum !== 1)
         neighbors.push(rowBellowCell - 1);
@@ -67,6 +68,8 @@ class App extends Component {
       if ((cellIndex + 1) % this.state.colsNum !== 0)
         neighbors.push(rowBellowCell + 1);
     }
+
+    console.log(cellIndex, neighbors);
 
     return neighbors;
   }
