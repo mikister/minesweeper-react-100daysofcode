@@ -31,3 +31,9 @@
 .cell--revealed > * {
   opacity: 1 !important;
 }
+
+.cell--flaged > * {
+  font-size: calc(var(--cell-dimension) * 0.5);
+  color: #d36135;
+  opacity: 1 !important;
+}

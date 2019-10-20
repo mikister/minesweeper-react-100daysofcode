@@ -9,6 +9,7 @@ class App extends Component {
     this.state = {
       cellContents: [],
       cellsRevealed: [],
+      cellsFlaged: [],
       bombCount: 40,
       contentGenerated: false,
       colsNum: 10,
@@ -31,6 +32,7 @@ class App extends Component {
     this.setState({
       cellContents: Array(cellCount).fill(""),
       cellsRevealed: Array(cellCount).fill(false),
+      cellsFlaged: Array(cellCount).fill(false),
     });
   }
 
@@ -73,7 +75,16 @@ class App extends Component {
     var cells = [];
 
     for(var cellIndex = 0; cellIndex < (this.state.colsNum * this.state.rowsNum); cellIndex++) {
-      cells.push(<Cell cellClicked={this.cellClicked.bind(this)} content={this.state.cellContents[cellIndex]} revealed={this.state.cellsRevealed[cellIndex]} cellIndex={cellIndex} key={cellIndex} />);
+      cells.push(
+        <Cell 
+          cellClicked={this.cellClicked.bind(this)} 
+          cellFlag={this.cellFlag.bind(this)}
+          content={this.state.cellContents[cellIndex]} 
+          revealed={this.state.cellsRevealed[cellIndex]} 
+          flaged={this.state.cellsFlaged[cellIndex]}
+          cellIndex={cellIndex} 
+          key={cellIndex} 
+        />);
     }
 
     return cells;
@@ -139,6 +150,15 @@ class App extends Component {
     });
   }
 
+  cellFlag(cellIndex) {
+    var newCellsFlaged = this.state.cellsFlaged;
+    newCellsFlaged[cellIndex] = !newCellsFlaged[cellIndex];
+
+    this.setState({
+      cellsFlaged: newCellsFlaged,  
+    });
+  }
+
   cellClicked = async (cellIndex) => {
     if (!this.state.contentGenerated) {
       await this.generateCellContents(cellIndex);
@@ -148,7 +168,7 @@ class App extends Component {
       });
     }
 
-    if (this.state.cellsRevealed[cellIndex] === false) {
+    if (this.state.cellsRevealed[cellIndex] === false && this.state.cellsFlaged[cellIndex] === false) {
       var newCellsRevealed = this.state.cellsRevealed;
       newCellsRevealed[cellIndex] = true;
       await this.setAsyncState({
