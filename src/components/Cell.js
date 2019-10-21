@@ -6,7 +6,7 @@ import { faBomb, faFlag } from '@fortawesome/free-solid-svg-icons'
 
 class Cell extends Component {
   onCellClick() {
-    this.props.cellClicked(this.props.cellIndex);
+    this.props.cellClick(this.props.cellIndex);
   }
 
   onCellFlag(event) {

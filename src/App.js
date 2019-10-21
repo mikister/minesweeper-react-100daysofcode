@@ -10,7 +10,7 @@ class App extends Component {
       cellContents: [],
       cellsRevealed: [],
       cellsFlaged: [],
-      bombCount: 40,
+      bombCount: 30,
       contentGenerated: false,
       colsNum: 10,
       rowsNum: 18,
@@ -24,7 +24,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    console.dir(this);
     let cellCount = this.state.rowsNum * this.state.colsNum;
 
     this.gridRef.current.style.setProperty("--larger-dimension", this.state.rowsNum);
@@ -69,8 +68,6 @@ class App extends Component {
         neighbors.push(rowBellowCell + 1);
     }
 
-    console.log(cellIndex, neighbors);
-
     return neighbors;
   }
 
@@ -80,7 +77,7 @@ class App extends Component {
     for(var cellIndex = 0; cellIndex < (this.state.colsNum * this.state.rowsNum); cellIndex++) {
       cells.push(
         <Cell 
-          cellClicked={this.cellClicked.bind(this)} 
+          cellClick={this.cellClick.bind(this)} 
           cellFlag={this.cellFlag.bind(this)}
           content={this.state.cellContents[cellIndex]} 
           revealed={this.state.cellsRevealed[cellIndex]} 
@@ -154,15 +151,17 @@ class App extends Component {
   }
 
   cellFlag(cellIndex) {
-    var newCellsFlaged = this.state.cellsFlaged;
-    newCellsFlaged[cellIndex] = !newCellsFlaged[cellIndex];
-
-    this.setState({
-      cellsFlaged: newCellsFlaged,  
-    });
+    if (!this.state.cellsRevealed[cellIndex]) {
+      var newCellsFlaged = this.state.cellsFlaged;
+      newCellsFlaged[cellIndex] = !newCellsFlaged[cellIndex];
+  
+      this.setState({
+        cellsFlaged: newCellsFlaged,  
+      });
+    }
   }
 
-  cellClicked = async (cellIndex) => {
+  cellClick = async (cellIndex) => {
     if (!this.state.contentGenerated) {
       await this.generateCellContents(cellIndex);
 
@@ -180,6 +179,32 @@ class App extends Component {
 
       this.checkCell(cellIndex);
     }
+    else if (this.state.cellsRevealed[cellIndex] === true && this.state.cellContents[cellIndex] !== "") {
+      var neighbors = this.getNeighboringCells(cellIndex);
+      var unflagedNeighbors = [...neighbors];
+      var flagCount = 0;
+      
+      
+      neighbors.forEach((neighborIndex) => {
+        if (this.state.cellsFlaged[neighborIndex]) {
+          flagCount++;
+        }
+
+        if (this.state.cellsFlaged[neighborIndex] || this.state.cellsRevealed[neighborIndex]) {
+          for( var ii = 0; ii < unflagedNeighbors.length; ii++){ 
+            if ( unflagedNeighbors[ii] === neighborIndex) {
+              unflagedNeighbors.splice(ii, 1); 
+            }
+          }
+        }
+      });
+
+      if (flagCount === parseInt(this.state.cellContents[cellIndex])) {
+        unflagedNeighbors.forEach((neighborIndex) => {
+          this.cellClick(neighborIndex);
+        });
+      }
+    }
   }
 
   checkCell = async (cellIndex) => {
@@ -191,7 +216,7 @@ class App extends Component {
 
       neighboringCells.forEach((neighborIndex) => {
         if (this.state.cellContents[neighborIndex] !== "b") {
-          this.cellClicked(neighborIndex);
+          this.cellClick(neighborIndex);
         }
       });
     }
