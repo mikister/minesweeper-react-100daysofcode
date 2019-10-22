@@ -3,6 +3,9 @@ import './App.css';
 
 import Cell from "./components/Cell.js";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons'
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -12,6 +15,7 @@ class App extends Component {
       cellsFlaged: [],
       bombCount: 30,
       contentGenerated: false,
+      gameOver: false,
       colsNum: 10,
       rowsNum: 18,
     };
@@ -227,17 +231,35 @@ class App extends Component {
 
     this.setState({
       cellsRevealed: Array(cellCount).fill(true),
+      gameOver: true,
     });
   }
   
+  resetGame() {
+    let cellCount = this.state.rowsNum * this.state.colsNum;
+
+    this.setState({
+      cellContents: Array(cellCount).fill(""),
+      cellsRevealed: Array(cellCount).fill(false),
+      cellsFlaged: Array(cellCount).fill(false),
+      contentGenerated: false,
+      gameOver: false,
+    });
+  }
 
 
   render() {
     return (
       <div className="App">
         <header className="header">
-          {/* menu button here */}
-          <h1>Minesweeper</h1>
+          <div className="button" onClick={this.resetGame.bind(this)}>
+            {
+              this.state.gameOver ? 
+                <FontAwesomeIcon icon={faDizzy} />
+              :
+                <FontAwesomeIcon icon={faSmile} />
+            }
+          </div>
         </header>
         <div className="grid-wrapper">
           <main className="grid" ref={this.gridRef}>

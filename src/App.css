@@ -49,6 +49,11 @@ body {
   gap: 0.1em;
 }
 
+.button:hover, .button:focus {
+  cursor: pointer;
+  color: #d36135;
+}
+
 @media only screen and (orientation: portrait) {
   .grid {
     --cell-dimension: calc((100vw - 1em) / var(--smaller-dimension) - 0.1em);
