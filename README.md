@@ -1,7 +1,7 @@
 # Minesweeper w/ React
 A Minesweeper game I built with React for 100DaysOfCode Challenge.
 
-![Screenshot of app](https://github.com/mikister/minesweeper-react-100daysofcode/blob/master/media/screenshot.jpg)
+![Screenshot of app](https://github.com/mikister/minesweeper-react-100daysofcode/blob/master/media/screenshot.png)
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
