@@ -4,7 +4,7 @@ import './App.css';
 import Cell from "./components/Cell.js";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSmile, faDizzy } from '@fortawesome/free-solid-svg-icons'
+import { faSmile, faDizzy, faBars, faTimes, faBomb } from '@fortawesome/free-solid-svg-icons'
 
 class App extends Component {
   constructor(props) {
@@ -16,6 +16,7 @@ class App extends Component {
       bombCount: 30,
       contentGenerated: false,
       gameOver: false,
+      menuOpen: false,
       colsNum: 10,
       rowsNum: 18,
     };
@@ -247,18 +248,77 @@ class App extends Component {
     });
   }
 
+  openMenu() {
+    this.setState({
+      menuOpen: true,
+    });
+  }
+
+  closeMenu() {
+    this.setState({
+      menuOpen: false,
+    });
+  }
+
+  setDifficulty = async (bombCount) => {
+    await this.setAsyncState({
+      bombCount: bombCount,
+      menuOpen: false,
+    });
+
+    this.resetGame();
+  }
+
 
   render() {
     return (
       <div className="App">
+        {
+          this.state.menuOpen ?
+            <div className="menu">
+              <header className="header header--flex-start">
+                <div className="button" onClick={this.closeMenu.bind(this)}>                
+                  <FontAwesomeIcon icon={faTimes} />
+                </div>
+              </header>
+              <div className="menu__body">
+                <h2>
+                  Set difficulty
+                </h2>
+                <div className="menu__option__group">
+                  <div className="menu__option" onClick={() => { this.setDifficulty.bind(this)(10) }}>
+                    <span>Easy</span><span>10 <FontAwesomeIcon icon={faBomb} /></span>
+                  </div>
+                  <div className="menu__option" onClick={() => { this.setDifficulty.bind(this)(15) }}>
+                    <span>Medium</span><span>15 <FontAwesomeIcon icon={faBomb} /></span>
+                  </div>
+                  <div className="menu__option" onClick={() => { this.setDifficulty.bind(this)(30) }}>
+                    <span>Hard</span><span>30 <FontAwesomeIcon icon={faBomb} /></span>
+                  </div>
+                  <div className="menu__option" onClick={() => { this.setDifficulty.bind(this)(45) }}>
+                    <span>Insane</span><span>45 <FontAwesomeIcon icon={faBomb} /></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          :
+            null
+        }
+
         <header className="header">
-          <div className="button" onClick={this.resetGame.bind(this)}>
+          <div className="button" onClick={this.openMenu.bind(this)}>
+            <FontAwesomeIcon icon={faBars} />
+          </div>
+          <div className="button button--expanded" onClick={this.resetGame.bind(this)}>
             {
               this.state.gameOver ? 
                 <FontAwesomeIcon icon={faDizzy} />
               :
                 <FontAwesomeIcon icon={faSmile} />
             }
+          </div>
+          <div className="button button--invisible">
+            <FontAwesomeIcon icon={faBars} />
           </div>
         </header>
         <div className="grid-wrapper">

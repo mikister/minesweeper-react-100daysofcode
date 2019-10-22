@@ -6,6 +6,8 @@
   justify-content: center;
   align-items: center;
 
+  cursor: pointer;
+
   font-size: calc(var(--cell-dimension) * 0.6);
   color: #0c1b33;
   background-color: #23ce6b;
